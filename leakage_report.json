@@ -1,0 +1,40 @@
+{
+  "analysis_date": "2026-01-14T19:43:06.721848",
+  "leakage_candidates": [],
+  "identifier_columns": [
+    "Id",
+    "OrgId",
+    "IncidentId",
+    "AlertId",
+    "DetectorId",
+    "EvidenceRole",
+    "DeviceId",
+    "Sha256",
+    "AccountSid",
+    "AccountObjectId",
+    "NetworkMessageId",
+    "EmailClusterId",
+    "RegistryKey",
+    "ApplicationId",
+    "OAuthApplicationId",
+    "ResourceIdName"
+  ],
+  "exclusion_list": [
+    "AccountSid",
+    "EmailClusterId",
+    "ApplicationId",
+    "DetectorId",
+    "Sha256",
+    "AccountObjectId",
+    "OrgId",
+    "EvidenceRole",
+    "NetworkMessageId",
+    "DeviceId",
+    "RegistryKey",
+    "IncidentId",
+    "OAuthApplicationId",
+    "ResourceIdName",
+    "AlertId",
+    "Id"
+  ]
+}

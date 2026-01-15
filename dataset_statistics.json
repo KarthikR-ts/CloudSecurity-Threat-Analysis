@@ -1,0 +1,15 @@
+{
+  "train": {
+    "n_rows": 9516837,
+    "n_cols": 32,
+    "memory_mb": 4001.29,
+    "target_distribution": {
+      "1.0": 4110817
+    }
+  },
+  "test": {
+    "n_rows": 4147992,
+    "n_cols": 32,
+    "memory_mb": 1458.99
+  }
+}
