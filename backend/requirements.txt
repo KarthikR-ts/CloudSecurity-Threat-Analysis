@@ -1,0 +1,9 @@
+
+fastapi
+uvicorn
+supabase
+pyarrow
+pandas
+python-multipart
+python-jose[cryptography]
+python-dotenv
