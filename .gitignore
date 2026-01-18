@@ -47,3 +47,15 @@ Thumbs.db
 # Project Specific
 artifacts/
 eda_plots/
+
+# Environment Variables (IMPORTANT: Never commit secrets!)
+.env
+.env.local
+.env.*.local
+*.env
+
+# Node.js
+node_modules/
+.next/
+out/
+.vercel

@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
 from pathlib import Path
+import subprocess
 
 # =============================================================================
 # SETUP
@@ -19,6 +20,20 @@ ARTIFACTS_DIR = BASE_DIR / "artifacts"
 ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 MODEL_PATH = ARTIFACTS_DIR / "xgboost_model.json"
 METRICS_PATH = ARTIFACTS_DIR / "metrics.json"
+
+def check_gpu_availability():
+    """Check if NVIDIA GPU with CUDA is available."""
+    try:
+        result = subprocess.run(['nvidia-smi'], capture_output=True, text=True)
+        if result.returncode == 0:
+            print("=" * 60)
+            print("GPU DETECTED - Using CUDA acceleration")
+            print("=" * 60)
+            return True
+    except FileNotFoundError:
+        pass
+    print("No GPU detected, using CPU")
+    return False
 
 def load_data():
     print("Loading data...")
@@ -64,25 +79,52 @@ def prepare_data(train_df, test_df):
 
     return X_train, y_train, X_test, y_test
 
-def train_model(X_train, y_train, X_val, y_val):
+def train_model(X_train, y_train, X_val, y_val, use_gpu=False):
+    """
+    Train XGBoost model with GPU acceleration if available.
+    
+    Optimized hyperparameters for better Macro-F1 on imbalanced security data.
+    """
     print("Training XGBoost model...")
     
-    # Initialize XGBoost Classifier
-    # Using 'hist' tree method for faster training on larger datasets if available
+    # Set tree method based on GPU availability
+    if use_gpu:
+        tree_method = 'hist'
+        device = 'cuda'
+        print(f"Using GPU acceleration: tree_method={tree_method}, device={device}")
+    else:
+        tree_method = 'hist'
+        device = 'cpu'
+        print(f"Using CPU: tree_method={tree_method}")
+    
+    # Initialize XGBoost Classifier with optimized hyperparameters
     clf = xgb.XGBClassifier(
         objective='multi:softprob',
-        num_class=3,  # 0, 1, 2
-        n_estimators=100,
-        learning_rate=0.1,
-        max_depth=6,
+        num_class=3,            # 0=FP, 1=BP, 2=TP
+        n_estimators=500,       # More trees for better performance
+        learning_rate=0.05,     # Lower LR with more estimators
+        max_depth=8,            # Deeper trees for complex patterns
+        min_child_weight=3,     # Regularization
+        gamma=0.1,              # Minimum loss reduction for split
         subsample=0.8,
         colsample_bytree=0.8,
+        reg_alpha=0.1,          # L1 regularization
+        reg_lambda=1.0,         # L2 regularization
         n_jobs=-1,
         random_state=42,
-        tree_method='hist', 
-        enable_categorical=True,  # Enable native categorical support
-        early_stopping_rounds=10
+        tree_method=tree_method,
+        device=device,
+        enable_categorical=True,
+        early_stopping_rounds=20,  # More patience for convergence
+        eval_metric='mlogloss'
     )
+    
+    print("\nHyperparameters:")
+    print(f"  n_estimators: 500")
+    print(f"  learning_rate: 0.05")
+    print(f"  max_depth: 8")
+    print(f"  device: {device}")
+    print()
     
     clf.fit(
         X_train, y_train,
@@ -102,9 +144,13 @@ def evaluate_model(clf, X_test, y_test):
     macro_f1 = f1_score(y_test, y_pred, average='macro')
     report = classification_report(y_test, y_pred, output_dict=True)
     
-    print(f"Accuracy: {acc:.4f}")
-    print(f"Macro F1: {macro_f1:.4f}")
-    print("Classification Report:")
+    print("\n" + "=" * 60)
+    print("FINAL RESULTS")
+    print("=" * 60)
+    print(f"Accuracy:  {acc:.4f} ({acc*100:.2f}%)")
+    print(f"Macro F1:  {macro_f1:.4f} ({macro_f1*100:.2f}%)")
+    print("=" * 60)
+    print("\nClassification Report:")
     print(classification_report(y_test, y_pred))
     
     # Save metrics
@@ -116,14 +162,26 @@ def evaluate_model(clf, X_test, y_test):
     
     with open(METRICS_PATH, "w") as f:
         json.dump(metrics, f, indent=4)
+    
+    print(f"\nMetrics saved to {METRICS_PATH}")
         
     return metrics
 
 def clean_column_names(df):
-    # XGBoost doesn't like some characters in feature names
     import re
-    regex = re.compile(r"[\[\]<>]", re.IGNORECASE)
-    df.columns = [regex.sub("_", col) if any(x in str(col) for x in set(('[', ']', '<', '>'))) else col for col in df.columns]
+    regex = re.compile(r"[^0-9a-zA-Z_]", re.IGNORECASE)
+    new_cols = []
+    print("DEBUG: Cleaning columns started.")
+    for i, col in enumerate(df.columns):
+        try:
+            old_name = str(col)
+            new_name = regex.sub("_", old_name)
+            new_cols.append(new_name)
+        except Exception as e:
+            print(f"CRASH on column index {i}: {e}")
+            raise e
+    df.columns = new_cols
+    print("DEBUG: Cleaning columns finished.")
     return df
 
 
@@ -132,9 +190,13 @@ import argparse
 def main():
     parser = argparse.ArgumentParser(description="Train XGBoost Model")
     parser.add_argument("--sample", type=int, default=None, help="Number of rows to sample for training")
+    parser.add_argument("--no-gpu", action="store_true", help="Disable GPU even if available")
     args = parser.parse_args()
 
     try:
+        # Check GPU availability
+        use_gpu = check_gpu_availability() and not args.no_gpu
+        
         train_df, test_df = load_data()
         
         # Sample if requested
@@ -153,6 +215,12 @@ def main():
         # Clean column names for XGBoost
         train_df = clean_column_names(train_df)
         test_df = clean_column_names(test_df)
+        
+        print("Cleaned Columns:", train_df.columns.tolist())
+        # Check for bad ones manually
+        for col in train_df.columns:
+            if any(c in col for c in ['[', ']', '<', '>']):
+                 print(f"BAD COLUMN LEFT: {col}")
 
         X_train_full, y_train_full, X_test, y_test = prepare_data(train_df, test_df)
         
@@ -167,11 +235,22 @@ def main():
              X_train, y_train = X_train_full, y_train_full
              X_val, y_val = X_train_full, y_train_full
         
-        clf = train_model(X_train, y_train, X_val, y_val)
+        clf = train_model(X_train, y_train, X_val, y_val, use_gpu=use_gpu)
         
         # Save model
         clf.save_model(MODEL_PATH)
         print(f"Model saved to {MODEL_PATH}")
+
+        # Save feature list
+        print("Saving feature list...")
+        feature_list = {
+            "features": X_train.columns.tolist(),
+            "labels": {"FalsePositive": 0, "BenignPositive": 1, "TruePositive": 2}
+        }
+        feature_list_path = BASE_DIR / "ml" / "feature_list.json"
+        with open(feature_list_path, "w") as f:
+            json.dump(feature_list, f)
+        print(f"Feature list saved to {feature_list_path}")
         
         if y_test is not None:
             evaluate_model(clf, X_test, y_test)
@@ -183,4 +262,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

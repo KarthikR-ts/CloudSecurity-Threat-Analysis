@@ -1,4 +1,3 @@
-
 fastapi
 uvicorn
 supabase
@@ -7,3 +6,8 @@ pandas
 python-multipart
 python-jose[cryptography]
 python-dotenv
+xgboost
+shap
+sentence-transformers
+pinecone
+google-generativeai

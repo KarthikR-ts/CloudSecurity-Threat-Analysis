@@ -1,0 +1,49 @@
+cannot call `vectorize` on size 0 inputs unless `otypes` is set
+Traceback (most recent call last):
+  File "C:\Users\Kartik\Desktop\1st project\el3\CloudSecurity-Threat-Analysis\backend\app\routers\predict.py", line 123, in predict_incident
+    return fallback_resp
+            ^^^^^^^^^^^^
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\xgboost\sklearn.py", line 1923, in predict_proba
+    class_probs = super().predict(
+        X=X,
+    ...<2 lines>...
+        iteration_range=iteration_range,
+    )
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\xgboost\core.py", line 774, in inner_f
+    return func(**kwargs)
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\xgboost\sklearn.py", line 1448, in predict
+    predts = self.get_booster().inplace_predict(
+        data=X,
+    ...<4 lines>...
+        validate_features=validate_features,
+    )
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\xgboost\core.py", line 774, in inner_f
+    return func(**kwargs)
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\xgboost\core.py", line 2852, in inplace_predict
+    data, fns, _ = _transform_pandas_df(data, enable_categorical)
+                   ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\xgboost\data.py", line 668, in _transform_pandas_df
+    PandasTransformed(arrays, ref_categories=ref_categories),
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\xgboost\data.py", line 625, in __init__
+    jnames, jcodes, buf = pd_cat_inf(col.categories, col.codes)
+                          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\xgboost\_data_utils.py", line 426, in pd_cat_inf
+    name_offsets, name_values = npstr_to_arrow_strarr(cats.values)
+                                ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\xgboost\_data_utils.py", line 419, in npstr_to_arrow_strarr
+    np.concatenate([np.array([0], dtype=np.int64), lenarr(strarr)])
+                                                   ~~~~~~^^^^^^^^
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\numpy\lib\_function_base_impl.py", line 2544, in __call__
+    return self._call_as_normal(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\numpy\lib\_function_base_impl.py", line 2537, in _call_as_normal
+    return self._vectorize_call(func=func, args=vargs)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\numpy\lib\_function_base_impl.py", line 2622, in _vectorize_call
+    ufunc, otypes = self._get_ufunc_and_otypes(func=func, args=args)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kartik\AppData\Roaming\Python\Python313\site-packages\numpy\lib\_function_base_impl.py", line 2578, in _get_ufunc_and_otypes
+    raise ValueError('cannot call `vectorize` on size 0 inputs '
+                     'unless `otypes` is set')
+ValueError: cannot call `vectorize` on size 0 inputs unless `otypes` is set

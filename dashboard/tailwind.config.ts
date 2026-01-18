@@ -1,46 +1,33 @@
+
 import type { Config } from "tailwindcss";
 
 const config: Config = {
     content: [
-        "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-        "./components/**/*.{js,ts,jsx,tsx,mdx}",
-        "./app/**/*.{js,ts,jsx,tsx,mdx}",
+        "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+        "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+        "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
         extend: {
             colors: {
-                background: "#0A0A0A", // Deep charcoal
-                foreground: "#EDEDED", // Off-white text
-                card: "rgba(255, 255, 255, 0.05)",
-                "card-border": "rgba(255, 255, 255, 0.1)",
+                background: "var(--background)",
+                foreground: "var(--foreground)",
                 brand: {
-                    primary: "#8B5CF6", // Neon Purple
-                    secondary: "#10B981", // Neon Green
-                    accent: "#EF4444", // Neon Red/Orange
-                },
-                muted: "#A3A3A3",
-            },
-            backdropBlur: {
-                xs: "2px",
-            },
-            backgroundImage: {
-                "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-                "glass-gradient": "linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
-            },
-            keyframes: {
-                "fade-in-up": {
-                    "0%": { opacity: "0", transform: "translateY(10px)" },
-                    "100%": { opacity: "1", transform: "translateY(0)" },
-                },
-                pulse: {
-                    "0%, 100%": { opacity: "1" },
-                    "50%": { opacity: "0.5" },
-                },
+                    primary: "#3B82F6",
+                    secondary: "#10B981",
+                    accent: "#F59E0B",
+                }
             },
             animation: {
-                "fade-in-up": "fade-in-up 0.5s ease-out forwards",
-                pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                'fade-in-up': 'fadeInUp 0.5s ease-out',
+                'ping': 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
             },
+            keyframes: {
+                fadeInUp: {
+                    '0%': { opacity: '0', transform: 'translateY(10px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                }
+            }
         },
     },
     plugins: [],

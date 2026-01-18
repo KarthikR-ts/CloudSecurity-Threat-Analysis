@@ -1,3 +1,6 @@
+"use client";
+import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 import { AlertVolumeChart } from "@/components/dashboard/AlertVolumeChart";
 import { IncidentTable } from "@/components/dashboard/IncidentTable";
 import { MetricCard } from "@/components/dashboard/MetricCard";
@@ -7,6 +10,21 @@ import { MOCK_ALERTS, MOCK_METRICS } from "@/lib/mock-data";
 import { ShieldAlert, Activity, CheckCircle2, AlertOctagon, XCircle } from "lucide-react";
 
 export default function EnterpriseDashboard() {
+    const [alerts, setAlerts] = useState(MOCK_ALERTS);
+
+    useEffect(() => {
+        const loadIncidents = async () => {
+            const data = await api.fetchIncidents();
+            if (data && data.length > 0) {
+                setAlerts(data);
+            }
+        };
+
+        loadIncidents();
+        const interval = setInterval(loadIncidents, 3000);
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div className="space-y-6">
             <DashboardToolbar />
@@ -14,7 +32,7 @@ export default function EnterpriseDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <MetricCard
                     title="Total Alerts"
-                    value={MOCK_METRICS.totalAlerts}
+                    value={alerts.length.toString()}
                     icon={<AlertOctagon className="w-5 h-5 text-brand-primary" />}
                     trend={{ value: "Live", direction: "neutral" }}
                     glowColor="primary"
@@ -22,20 +40,20 @@ export default function EnterpriseDashboard() {
                 />
                 <MetricCard
                     title="True Positives"
-                    value={MOCK_METRICS.truePositives}
+                    value={alerts.filter(a => a.classification === 'TP').length.toString()}
                     icon={<ShieldAlert className="w-5 h-5 text-red-500" />}
                     trend={{ value: "+12%", direction: "up" }}
                     glowColor="accent"
                 />
                 <MetricCard
                     title="False Positives"
-                    value={MOCK_METRICS.falsePositives}
+                    value={alerts.filter(a => a.classification === 'FP').length.toString()}
                     icon={<XCircle className="w-5 h-5 text-amber-500" />}
                     trend={{ value: "-5%", direction: "down" }}
                 />
                 <MetricCard
                     title="Benign Positives"
-                    value={MOCK_METRICS.benignPositives}
+                    value={alerts.filter(a => a.classification === 'BP').length.toString()}
                     icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
                     trend={{ value: "+8%", direction: "up" }}
                 />
@@ -59,7 +77,7 @@ export default function EnterpriseDashboard() {
                                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                                     <span className="text-sm font-medium">Ingestion Pipeline</span>
                                 </div>
-                                <span className="text-xs text-muted-foreground">980 eps</span>
+                                <span className="text-xs text-muted-foreground">{alerts.length * 12 + 450} eps</span>
                             </div>
                             <div className="flex items-center justify-between p-3 rounded-lg bg-white/5">
                                 <div className="flex items-center gap-3">
@@ -89,7 +107,7 @@ export default function EnterpriseDashboard() {
                 </div>
             </div>
 
-            <IncidentTable alerts={MOCK_ALERTS} />
+            <IncidentTable alerts={alerts} />
         </div>
     );
 }

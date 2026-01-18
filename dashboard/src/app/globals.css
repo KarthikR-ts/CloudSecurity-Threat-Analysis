@@ -1,68 +1,29 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  /* Colors - Modern SaaS Theme */
-  --color-background: #f8fafc;
-  /* Slate 50 */
-  --color-foreground: #0f172a;
-  /* Slate 900 */
-
-  --color-brand-primary: #4f46e5;
-  /* Indigo 600 */
-  --color-brand-secondary: #475569;
-  /* Slate 600 */
-  --color-brand-accent: #ef4444;
-  /* Red 500 */
-  --color-muted-foreground: #64748b;
-  /* Slate 500 */
-
-  /* Animations (Simple) */
-  --animate-fade-in-up: fade-in-up 0.5s ease-out forwards;
-
-  @keyframes fade-in-up {
-    0% {
-      opacity: 0;
-      transform: translateY(5px);
-    }
-
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+:root {
+  --foreground-rgb: 15, 23, 42;
+  --background-start-rgb: 248, 250, 252;
+  --background-end-rgb: 248, 250, 252;
 }
 
-/* Base Styles */
 body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  font-family: ui-sans-serif, system-ui, sans-serif;
-  /* Standard System Fonts */
-  -webkit-font-smoothing: antialiased;
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
 }
 
-/* Utilities */
-@utility glass {
-  background-color: #ffffff;
-  border-width: 1px;
-  border-color: #e2e8f0;
-  /* Slate 200 */
-  /* No blur, just solid */
-}
-
-@utility glass-card {
-  background-color: #ffffff;
-  border-width: 1px;
-  border-color: #e2e8f0;
-  border-radius: 0.5rem;
-  /* rounded-lg */
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-}
-
-@utility avatar {
-  border-radius: 9999px;
-  background-color: #e2e8f0;
-  border-width: 1px;
-  border-color: #cbd5e1;
-  object-fit: cover;
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .glass-card {
+    @apply bg-white border border-slate-200 rounded-lg shadow-sm;
+  }
 }
