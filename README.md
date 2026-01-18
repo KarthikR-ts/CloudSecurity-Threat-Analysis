@@ -1,4 +1,4 @@
-# 🛡️ Cloud Sentinel - AI-Powered Security Incident Triage
+# Cloud Sentinel - AI-Powered Security Incident Triage
 
 <div align="center">
 
@@ -13,25 +13,25 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [System Architecture](#-system-architecture)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Usage](#-usage)
-- [API Documentation](#-api-documentation)
-- [ML Model](#-ml-model)
-- [RAG Pipeline](#-rag-pipeline)
-- [Contributing](#-contributing)
-- [License](#-license)
+- [Overview](#overview)
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [API Documentation](#api-documentation)
+- [ML Model](#ml-model)
+- [RAG Pipeline](#rag-pipeline)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## 🎯 Overview
+## Overview
 
 Cloud Sentinel is an enterprise-grade security operations platform designed to help SOC (Security Operations Center) analysts efficiently triage and respond to cloud security alerts. The platform addresses the critical challenge of **alert fatigue** by automatically classifying alerts into:
 
@@ -43,34 +43,34 @@ By leveraging machine learning and AI-powered knowledge retrieval, Cloud Sentine
 
 ---
 
-## ✨ Features
+## Features
 
-### 🤖 ML-Powered Classification
+### ML-Powered Classification
 - **XGBoost Model** trained on 500K+ real-world security alerts
 - **3-class classification**: True Positive, False Positive, Benign Positive
 - **SHAP Explainability**: Understand why each prediction was made
 - **Macro F1 Score**: 82.1% accuracy
 
-### 🧠 RAG-Powered Remediation
+### RAG-Powered Remediation
 - **Vector Database**: Pinecone with 868+ security documents
 - **Knowledge Sources**: MITRE ATT&CK, CIS Benchmarks, Azure Policies
 - **AI Advisor**: Gemini-powered contextual remediation guidance
 - **Auto-Fix Scripts**: Generate Azure CLI/Terraform remediation code
 
-### 📊 Real-Time Dashboard
+### Real-Time Dashboard
 - **Live Metrics**: Total alerts, TP/FP/BP breakdown, MTTR
 - **Incident Table**: Sortable, filterable incident list
 - **Alert Volume Chart**: 24-hour trend visualization
 - **System Health**: Pipeline status monitoring
 
-### 🔄 Incident Simulation
+### Incident Simulation
 - **Traffic Simulator**: Generate realistic security incidents
 - **Live Updates**: Dashboard refreshes every 3 seconds
 - **Demo Mode**: Perfect for presentations and testing
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -121,7 +121,7 @@ By leveraging machine learning and AI-powered knowledge retrieval, Cloud Sentine
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 | Technology | Purpose |
@@ -153,61 +153,58 @@ By leveraging machine learning and AI-powered knowledge retrieval, Cloud Sentine
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 CloudSecurity-Threat-Analysis/
 │
-├── 📂 backend/                    # FastAPI Backend
-│   ├── 📂 app/
-│   │   ├── 📂 routers/            # API endpoints
+├── backend/                       # FastAPI Backend
+│   ├── app/
+│   │   ├── routers/               # API endpoints
 │   │   │   ├── auth.py            # Authentication
 │   │   │   ├── dashboard.py       # Dashboard data
 │   │   │   ├── incidents.py       # Incident management
 │   │   │   ├── ml.py              # ML endpoints
 │   │   │   ├── predict.py         # Prediction + SHAP
 │   │   │   └── rag.py             # RAG search + advice
-│   │   ├── 📂 rag/                # RAG Pipeline
+│   │   ├── rag/                   # RAG Pipeline
 │   │   │   ├── embeddings.py      # Text embeddings
 │   │   │   ├── rag_pipeline.py    # LLM integration
 │   │   │   └── vector_db.py       # Pinecone client
 │   │   ├── auth.py                # Auth utilities
 │   │   └── main.py                # FastAPI app
-│   ├── 📂 scripts/                # Utility scripts
+│   ├── scripts/                   # Utility scripts
 │   │   ├── ingest_data.py         # Load knowledge base
 │   │   ├── init_pinecone.py       # Create vector index
 │   │   └── simulate_traffic.py    # Generate test incidents
 │   ├── .env                       # Environment variables
 │   └── requirements.txt           # Python dependencies
 │
-├── 📂 dashboard/                  # Next.js Frontend
-│   ├── 📂 src/
-│   │   ├── 📂 app/                # App Router pages
-│   │   │   ├── 📂 dashboard/
-│   │   │   │   ├── 📂 enterprise/ # Main dashboard
-│   │   │   │   └── 📂 incidents/  # Incident details
+├── dashboard/                     # Next.js Frontend
+│   ├── src/
+│   │   ├── app/                   # App Router pages
+│   │   │   ├── dashboard/
+│   │   │   │   ├── enterprise/    # Main dashboard
+│   │   │   │   └── incidents/     # Incident details
 │   │   │   └── page.tsx           # Landing page
-│   │   ├── 📂 components/         # React components
-│   │   │   ├── 📂 dashboard/      # Dashboard widgets
-│   │   │   ├── 📂 layout/         # Header, Sidebar
-│   │   │   └── 📂 ui/             # Reusable UI
-│   │   └── 📂 lib/                # Utilities
+│   │   ├── components/            # React components
+│   │   │   ├── dashboard/         # Dashboard widgets
+│   │   │   ├── layout/            # Header, Sidebar
+│   │   │   └── ui/                # Reusable UI
+│   │   └── lib/                   # Utilities
 │   │       ├── api.ts             # Backend API client
 │   │       └── mock-data.ts       # Sample data
 │   ├── package.json
 │   └── tailwind.config.ts
 │
-├── 📂 ml/                         # ML Training & Artifacts
+├── ml/                            # ML Training & Artifacts
 │   ├── train_xgboost.py           # Local training script
 │   ├── train_xgboost_colab.py     # Colab training script
 │   └── feature_list.json          # Model features
 │
-├── 📂 artifacts/                  # Model artifacts
+├── artifacts/                     # Model artifacts
 │   ├── xgboost_model.json         # Trained model
 │   └── metrics.json               # Evaluation metrics
-│
-├── 📂 docs/                       # Documentation
-│   └── system_architecture.png    # Architecture diagram
 │
 ├── .gitignore
 └── README.md                      # This file
@@ -215,7 +212,7 @@ CloudSecurity-Threat-Analysis/
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 - Python 3.10+
@@ -264,7 +261,7 @@ python scripts/ingest_data.py
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 Create a `.env` file in the `backend/` directory:
 
@@ -290,7 +287,7 @@ GEMINI_API_KEY=your-gemini-api-key
 
 ---
 
-## 🎮 Usage
+## Usage
 
 ### Start Backend
 ```bash
@@ -315,7 +312,7 @@ python scripts/simulate_traffic.py
 
 ---
 
-## 📚 API Documentation
+## API Documentation
 
 ### Base URL
 ```
@@ -371,7 +368,7 @@ curl -X POST http://localhost:8000/api/rag/ask \
 
 ---
 
-## 🤖 ML Model
+## ML Model
 
 ### Model Details
 - **Algorithm**: XGBoost Classifier
@@ -396,7 +393,7 @@ curl -X POST http://localhost:8000/api/rag/ask \
 
 ---
 
-## 🧠 RAG Pipeline
+## RAG Pipeline
 
 ### Knowledge Base Statistics
 | Source | Documents |
@@ -415,7 +412,7 @@ curl -X POST http://localhost:8000/api/rag/ask \
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -425,20 +422,6 @@ curl -X POST http://localhost:8000/api/rag/ask \
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👥 Team
-
-**Kartik R** - AI/ML Developer
-
----
-
-<div align="center">
-
-**Built with ❤️ for the Cloud Security Community**
-
-</div>
