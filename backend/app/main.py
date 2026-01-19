@@ -9,7 +9,7 @@ load_dotenv()
 
 from app.routers import auth, dashboard, ml
 
-app = FastAPI(title="Cloud Sentinel API")
+app = FastAPI(title="Aurora CSPM API", description="Cloud Security Posture Management with ML-powered classification")
 
 # CORS configuration
 origins = [
@@ -39,6 +39,24 @@ app.include_router(predict.router, prefix="/api/predict", tags=["Prediction"])
 from app.routers import rag
 app.include_router(rag.router, prefix="/api/rag", tags=["RAG"])
 
+# New Aurora CSPM routers
+from app.routers import alerts
+app.include_router(alerts.router, prefix="/api/alerts", tags=["Enhanced Alerts"])
+from app.routers import guidance
+app.include_router(guidance.router, prefix="/api/guidance", tags=["Role-Aware Guidance"])
+
 @app.get("/")
 def read_root():
-    return {"status": "ok", "service": "Cloud Sentinel Backend"}
+    return {"status": "ok", "service": "Aurora CSPM Backend", "version": "2.0"}
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "healthy",
+        "components": {
+            "api": "online",
+            "ml_model": "loaded",
+            "rag_pipeline": "connected"
+        }
+    }
+

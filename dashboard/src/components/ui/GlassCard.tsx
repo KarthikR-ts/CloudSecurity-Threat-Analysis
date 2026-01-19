@@ -4,19 +4,22 @@ interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
     className?: string;
     noHover?: boolean;
+    liquid?: boolean;
 }
 
-export function GlassCard({ children, className, noHover = false, ...props }: GlassCardProps) {
+export function GlassCard({ children, className, noHover = false, liquid = true, ...props }: GlassCardProps) {
     return (
         <div
             className={cn(
-                "bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl p-6 transition-all duration-300",
-                !noHover && "hover:bg-white/10 hover:shadow-[0_0_20px_rgba(139,92,246,0.1)] hover:border-white/20",
+                "glass-card group relative p-6 transition-all duration-500",
+                liquid && "liquid-glass",
+                !noHover && "hover:scale-[1.01] hover:border-white/30 hover:shadow-[0_0_40px_rgba(139,92,246,0.15)]",
                 className
             )}
             {...props}
         >
-            {children}
+            <div className="relative z-10">{children}</div>
         </div>
     );
 }
+
