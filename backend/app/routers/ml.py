@@ -7,7 +7,11 @@ from typing import List, Dict, Any
 
 router = APIRouter()
 
-DATA_DIR = os.path.join(os.getcwd(), "backend", "data")
+from pathlib import Path
+
+# Base directory of the project
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+DATA_DIR = BASE_DIR / "data"
 
 def get_parquet_path(filename: str):
     # Security: Ensure filename is just a basename, no path traversal

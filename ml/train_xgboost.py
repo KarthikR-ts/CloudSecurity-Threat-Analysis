@@ -13,9 +13,9 @@ import subprocess
 # =============================================================================
 # SETUP
 # =============================================================================
-BASE_DIR = Path(r"c:\Users\Kartik\Desktop\1st project\el3\CloudSecurity-Threat-Analysis")
-DATA_FILE_TRAIN = BASE_DIR / "train_ml_ready.parquet"
-DATA_FILE_TEST = BASE_DIR / "test_ml_ready.parquet"
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_FILE_TRAIN = BASE_DIR / "backend" / "data" / "train_ml_ready.parquet"
+DATA_FILE_TEST = BASE_DIR / "backend" / "data" / "test_ml_ready.parquet"
 ARTIFACTS_DIR = BASE_DIR / "artifacts"
 ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 MODEL_PATH = ARTIFACTS_DIR / "xgboost_model.json"

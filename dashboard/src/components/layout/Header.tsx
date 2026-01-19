@@ -15,6 +15,10 @@ export function Header() {
                 <h2 className="text-xl font-semibold capitalize tracking-tight text-gray-800">
                     {title.replace("-", " ")}
                 </h2>
+                <div className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-xs font-bold border border-emerald-100">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    LIVE
+                </div>
             </div>
 
             <div className="flex items-center gap-6">

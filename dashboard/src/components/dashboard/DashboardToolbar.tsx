@@ -19,9 +19,12 @@ export function DashboardToolbar() {
             <div className="flex items-center gap-4">
                 <h2 className="text-xl font-bold text-slate-900 tracking-tight">Security Overview</h2>
                 <span className="h-6 w-px bg-slate-200" />
-                <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-                    System Active
+                <div className="flex flex-col">
+                    <div className="flex items-center gap-2 text-sm text-slate-800 font-bold">
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse" />
+                        System Active
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono uppercase tracking-widest mt-0.5">Last Sync: {new Date().toLocaleTimeString()}</span>
                 </div>
             </div>
 

@@ -5,7 +5,11 @@ import os
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-DATA_DIR = os.path.join(os.getcwd(), "backend", "data")
+from pathlib import Path
+
+# Base directory of the project (root)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+DATA_DIR = BASE_DIR / "backend" / "data"
 os.makedirs(DATA_DIR, exist_ok=True)
 
 def generate_file(filename, rows=100_000): # 100k rows to test performance slightly
@@ -15,7 +19,7 @@ def generate_file(filename, rows=100_000): # 100k rows to test performance sligh
         'feature_1': np.random.randn(rows),
         'feature_2': np.random.randn(rows),
         'category': np.random.choice(['A', 'B', 'C'], rows),
-        'label': np.random.randint(0, 2, rows)
+        'IncidentGrade_Encoded': np.random.randint(0, 3, rows)
     })
     
     path = os.path.join(DATA_DIR, filename)
