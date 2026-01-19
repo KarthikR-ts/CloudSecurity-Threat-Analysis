@@ -48,7 +48,7 @@ Thumbs.db
 artifacts/
 eda_plots/
 
-# Environment Variables (IMPORTANT: Never commit secrets!)
+# Environment Variables  
 .env
 .env.local
 .env.*.local
