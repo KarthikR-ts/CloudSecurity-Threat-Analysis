@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react";
 import { api, EnhancedAlert, AlertsResponse } from "@/lib/api";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { DemoButton } from "@/components/ui/DemoButton";
+import { DashboardToolbar } from "@/components/dashboard/DashboardToolbar";
 import {
     ShieldAlert, Terminal, Clock, TrendingDown,
     ChevronRight, AlertTriangle, CheckCircle, XCircle,
@@ -95,10 +95,7 @@ export default function CloudEngineerDashboard() {
 
     return (
         <div className="space-y-6">
-            {/* Demo Control */}
-            <div className="flex justify-center">
-                <DemoButton />
-            </div>
+            <DashboardToolbar />
 
             {/* Workload Metrics */}
 
@@ -272,14 +269,21 @@ export default function CloudEngineerDashboard() {
             {/* Remediation Panel */}
             {selectedAlert && (
                 <GlassCard className="border-blue-500/30 overflow-hidden relative">
-                    <div className="absolute top-0 right-0 p-4">
+                    <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
                         <div className="flex items-center gap-2 px-3 py-1 bg-blue-500/20 rounded-full border border-blue-500/30">
                             <Sparkles className="w-4 h-4 text-blue-400 animate-pulse" />
                             <span className="text-[10px] font-bold text-blue-400 tracking-wider">RAG-POWERED REMEDIATION</span>
                         </div>
+                        <div className="flex gap-2">
+                            {selectedAlert.mitre_techniques.map(t => (
+                                <span key={t} className="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-[10px] font-semibold border border-red-500/20">
+                                    {t}
+                                </span>
+                            ))}
+                        </div>
                     </div>
 
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center justify-between mb-6 p-6 pb-0">
                         <div>
                             <h3 className="font-bold text-xl text-white flex items-center gap-3">
                                 <Terminal className="w-6 h-6 text-blue-400" />
@@ -289,17 +293,10 @@ export default function CloudEngineerDashboard() {
                                 Context-aware steps generated from Azure Security Benchmark & MITRE ATT&CK
                             </p>
                         </div>
-                        <div className="flex gap-2">
-                            {selectedAlert.mitre_techniques.map(t => (
-                                <span key={t} className="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-semibold border border-red-500/20">
-                                    {t}
-                                </span>
-                            ))}
-                        </div>
                     </div>
 
                     {guidance ? (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 pt-0">
                             <div className="space-y-6">
                                 <div className="p-4 bg-white/5 rounded-xl border border-white/10">
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
@@ -352,7 +349,7 @@ export default function CloudEngineerDashboard() {
                             </div>
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center h-64 gap-4">
+                        <div className="flex flex-col items-center justify-center h-64 gap-4 p-6">
                             <div className="relative">
                                 <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full animate-pulse" />
                                 <Brain className="w-12 h-12 text-blue-400 relative z-10" />

@@ -70,33 +70,6 @@ export function RiskGauge({ value, size = 200, label = "Risk Score" }: RiskGauge
                     strokeLinecap="round"
                 />
 
-                {/* Colored zones */}
-                {/* Green zone (0-33) */}
-                <path
-                    d={`M ${center - radius} ${center} A ${radius} ${radius} 0 0 1 ${center - radius * Math.cos(Math.PI * 0.67)} ${center - radius * Math.sin(Math.PI * 0.67)}`}
-                    fill="none"
-                    stroke="rgba(34, 197, 94, 0.3)"
-                    strokeWidth={strokeWidth}
-                    strokeLinecap="round"
-                />
-
-                {/* Yellow zone (33-66) */}
-                <path
-                    d={`M ${center - radius * Math.cos(Math.PI * 0.67)} ${center - radius * Math.sin(Math.PI * 0.67)} A ${radius} ${radius} 0 0 1 ${center + radius * Math.cos(Math.PI * 0.67)} ${center - radius * Math.sin(Math.PI * 0.67)}`}
-                    fill="none"
-                    stroke="rgba(245, 158, 11, 0.3)"
-                    strokeWidth={strokeWidth}
-                />
-
-                {/* Red zone (66-100) */}
-                <path
-                    d={`M ${center + radius * Math.cos(Math.PI * 0.67)} ${center - radius * Math.sin(Math.PI * 0.67)} A ${radius} ${radius} 0 0 1 ${center + radius} ${center}`}
-                    fill="none"
-                    stroke="rgba(239, 68, 68, 0.3)"
-                    strokeWidth={strokeWidth}
-                    strokeLinecap="round"
-                />
-
                 {/* Active progress */}
                 <path
                     d={`M ${center - radius} ${center} A ${radius} ${radius} 0 0 1 ${center + radius} ${center}`}

@@ -1,10 +1,12 @@
 import { GlassCard } from "@/components/ui/GlassCard";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { Brain, Terminal } from "lucide-react";
+import { DashboardToolbar } from "@/components/dashboard/DashboardToolbar";
 
 export default function ResearcherDashboard() {
     return (
         <div className="space-y-6">
+            <DashboardToolbar />
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-primary to-purple-400">Model Diagnostics</h1>

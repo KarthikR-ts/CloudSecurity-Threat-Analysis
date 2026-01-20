@@ -1,6 +1,7 @@
 import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { CheckCircle, AlertTriangle, XCircle, FileJson } from "lucide-react";
+import { DashboardToolbar } from "@/components/dashboard/DashboardToolbar";
 
 export default function VendorDashboard() {
     const policies = [
@@ -13,6 +14,7 @@ export default function VendorDashboard() {
 
     return (
         <div className="space-y-6">
+            <DashboardToolbar />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <GlassCard className="flex items-center gap-4">
                     <div className="p-3 bg-emerald-500/10 rounded-full border border-emerald-500/20">

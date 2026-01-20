@@ -45,6 +45,9 @@ app.include_router(alerts.router, prefix="/api/alerts", tags=["Enhanced Alerts"]
 from app.routers import guidance
 app.include_router(guidance.router, prefix="/api/guidance", tags=["Role-Aware Guidance"])
 
+from app.routers import simulation
+app.include_router(simulation.router, prefix="/api/simulation", tags=["Simulation"])
+
 @app.get("/")
 def read_root():
     return {"status": "ok", "service": "Aurora CSPM Backend", "version": "2.0"}

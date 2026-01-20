@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { api, EnhancedAlert, MetricsSummary } from "@/lib/api";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { ShapWaterfall } from "@/components/charts/ShapWaterfall";
-import { DemoButton } from "@/components/ui/DemoButton";
+import { DashboardToolbar } from "@/components/dashboard/DashboardToolbar";
 import {
     Brain, Cpu, Activity, BarChart3,
     TrendingUp, AlertCircle, CheckCircle2, Zap,
@@ -103,10 +103,7 @@ export default function MLEngineerDashboard() {
 
     return (
         <div className="space-y-6">
-            {/* Demo Control */}
-            <div className="flex justify-center">
-                <DemoButton />
-            </div>
+            <DashboardToolbar />
 
             {/* Model Metrics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -183,10 +180,10 @@ export default function MLEngineerDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* SHAP Waterfall */}
                 <GlassCard>
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-semibold text-white">SHAP Explanation</h3>
+                    <div className="flex items-center justify-between mb-4 gap-4">
+                        <h3 className="font-semibold text-white truncate">SHAP Explanation</h3>
                         <select
-                            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-gray-300"
+                            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-gray-300 min-w-0 flex-1 max-w-[250px]"
                             value={selectedAlert?.id || ''}
                             onChange={(e) => {
                                 const alert = alerts.find(a => a.id === e.target.value);
@@ -201,48 +198,62 @@ export default function MLEngineerDashboard() {
                         </select>
                     </div>
 
-                    {selectedAlert && shapValues.length > 0 && (
+                    {selectedAlert && shapValues.length > 0 ? (
                         <ShapWaterfall
                             baseValue={0.33}
                             shapValues={shapValues}
                             prediction={selectedAlert.xgb_prediction}
                         />
+                    ) : (
+                        <div className="h-[300px] flex flex-col items-center justify-center text-gray-500 border border-dashed border-white/5 rounded-xl bg-black/20">
+                            <Activity className="w-8 h-8 mb-2 opacity-20" />
+                            <p className="text-sm italic">No SHAP analysis available for this alert</p>
+                        </div>
                     )}
                 </GlassCard>
 
                 {/* Feature Importance */}
                 <GlassCard>
-                    <h3 className="font-semibold text-white mb-4">Feature Importance (Current Alert)</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={featureImportance} layout="vertical">
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                            <XAxis type="number" stroke="#9ca3af" fontSize={12} />
-                            <YAxis
-                                dataKey="feature"
-                                type="category"
-                                stroke="#9ca3af"
-                                fontSize={11}
-                                width={120}
-                                tickFormatter={(value) => value.length > 15 ? value.slice(0, 15) + '...' : value}
-                            />
-                            <Tooltip
-                                contentStyle={{
-                                    backgroundColor: 'rgba(17, 24, 39, 0.95)',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    borderRadius: '8px'
-                                }}
-                                formatter={(value: number) => value.toFixed(4)}
-                            />
-                            <Bar dataKey="importance" radius={[0, 4, 4, 0]}>
-                                {featureImportance.map((entry, index) => (
-                                    <Cell
-                                        key={`cell-${index}`}
-                                        fill={entry.value >= 0 ? '#ef4444' : '#3b82f6'}
+                    <h3 className="font-semibold text-white mb-4">Feature Importance (Top Contributors)</h3>
+                    {featureImportance.length > 0 ? (
+                        <div className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={featureImportance} layout="vertical">
+                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                                    <XAxis type="number" stroke="#9ca3af" fontSize={12} />
+                                    <YAxis
+                                        dataKey="feature"
+                                        type="category"
+                                        stroke="#9ca3af"
+                                        fontSize={11}
+                                        width={120}
+                                        tickFormatter={(value) => value.length > 15 ? value.slice(0, 15) + '...' : value}
                                     />
-                                ))}
-                            </Bar>
-                        </BarChart>
-                    </ResponsiveContainer>
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            borderRadius: '8px'
+                                        }}
+                                        formatter={(value: number) => value.toFixed(4)}
+                                    />
+                                    <Bar dataKey="importance" radius={[0, 4, 4, 0]}>
+                                        {featureImportance.map((entry, index) => (
+                                            <Cell
+                                                key={`cell-${index}`}
+                                                fill={entry.value >= 0 ? '#ef4444' : '#3b82f6'}
+                                            />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    ) : (
+                        <div className="h-[300px] flex flex-col items-center justify-center text-gray-500 border border-dashed border-white/5 rounded-xl bg-black/20">
+                            <BarChart3 className="w-8 h-8 mb-2 opacity-20" />
+                            <p className="text-sm italic">Feature importance data missing</p>
+                        </div>
+                    )}
                 </GlassCard>
             </div>
 
@@ -328,7 +339,7 @@ export default function MLEngineerDashboard() {
                             <Cpu className="w-7 h-7 text-white" />
                         </div>
                         <div>
-                            <h3 className="font-exrabold text-2xl text-white tracking-tight">Technical Root Cause Analysis</h3>
+                            <h3 className="font-extrabold text-2xl text-white tracking-tight">Technical Root Cause Analysis</h3>
                             <p className="text-gray-300 font-medium">
                                 Alert ID: <span className="text-green-400 font-mono">{selectedAlert.id}</span> |
                                 Classification: <span className="text-white font-bold">{selectedAlert.xgb_prediction}</span>

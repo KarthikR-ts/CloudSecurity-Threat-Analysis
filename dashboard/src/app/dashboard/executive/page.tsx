@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { api, EnhancedAlert, MetricsSummary } from "@/lib/api";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { RiskGauge } from "@/components/charts/RiskGauge";
-import { DemoButton } from "@/components/ui/DemoButton";
+import { DashboardToolbar } from "@/components/dashboard/DashboardToolbar";
 import {
     AlertTriangle, Shield, Users, DollarSign,
     CheckCircle, ArrowRight, Lightbulb, TrendingUp,
@@ -84,10 +84,7 @@ export default function ExecutiveDashboard() {
 
     return (
         <div className="space-y-6">
-            {/* Demo Control */}
-            <div className="flex justify-center">
-                <DemoButton />
-            </div>
+            <DashboardToolbar />
 
             {/* Risk Overview Row */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
