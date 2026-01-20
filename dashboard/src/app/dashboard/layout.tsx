@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { SimulationOverlay } from "@/components/dashboard/SimulationOverlay";
+import { PageTransition } from "@/components/layout/PageTransition";
 
 export default function DashboardLayout({
     children,
@@ -7,11 +8,13 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="min-h-screen bg-background text-foreground bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-primary/5 via-background to-background">
+        <div className="min-h-screen bg-black transition-colors duration-300">
             <Header />
             <SimulationOverlay />
-            <main className="p-8 animate-fade-in-up">
-                {children}
+            <main className="mx-auto max-w-7xl p-6 lg:p-12">
+                <PageTransition>
+                    {children}
+                </PageTransition>
             </main>
         </div>
     );

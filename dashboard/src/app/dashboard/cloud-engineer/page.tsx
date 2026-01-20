@@ -20,6 +20,7 @@ import {
 } from "recharts";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const SEVERITY_COLORS = {
     critical: "#ef4444",
@@ -60,7 +61,7 @@ export default function CloudEngineerDashboard() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-96">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-zinc-500 border-t-transparent" />
             </div>
         );
     }
@@ -85,58 +86,64 @@ export default function CloudEngineerDashboard() {
     });
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             <DashboardToolbar />
 
             {/* Workload Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <GlassCard className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/20">
+                <GlassCard className="bg-zinc-900/50 border-zinc-800/50 hover:bg-zinc-900 transition-colors group">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                            <ShieldAlert className="w-6 h-6 text-blue-400" />
+                        <div className="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <ShieldAlert className="w-5 h-5 text-indigo-400" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-400">Total Alerts</p>
-                            <p className="text-2xl font-bold text-white">{stats?.total_alerts || 0}</p>
+                            <p className="text-xs font-medium text-zinc-500">Total Alerts</p>
+                            <p className="text-2xl font-semibold text-zinc-100">{stats?.total_alerts || 0}</p>
                         </div>
                     </div>
                 </GlassCard>
 
-                <GlassCard className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/20">
+                <GlassCard className="bg-zinc-900/50 border-zinc-800/50 hover:bg-zinc-900 transition-colors group">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
-                            <CheckCircle className="w-6 h-6 text-green-400" />
+                        <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <CheckCircle className="w-5 h-5 text-emerald-400" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-400">Auto-Classified</p>
-                            <p className="text-2xl font-bold text-white">{stats?.auto_classified || 0}</p>
-                            <p className="text-xs text-green-400">High confidence</p>
+                            <p className="text-xs font-medium text-zinc-500">Auto-Classified</p>
+                            <div className="flex items-baseline gap-2">
+                                <p className="text-2xl font-semibold text-zinc-100">{stats?.auto_classified || 0}</p>
+                                <span className="text-[10px] text-emerald-500/80">High Conf.</span>
+                            </div>
                         </div>
                     </div>
                 </GlassCard>
 
-                <GlassCard className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-amber-500/20">
+                <GlassCard className="bg-zinc-900/50 border-zinc-800/50 hover:bg-zinc-900 transition-colors group">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                            <Clock className="w-6 h-6 text-amber-400" />
+                        <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Clock className="w-5 h-5 text-amber-400" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-400">Manual Review</p>
-                            <p className="text-2xl font-bold text-white">{stats?.manual_review_needed || 0}</p>
-                            <p className="text-xs text-amber-400">Needs attention</p>
+                            <p className="text-xs font-medium text-zinc-500">Manual Review</p>
+                            <div className="flex items-baseline gap-2">
+                                <p className="text-2xl font-semibold text-zinc-100">{stats?.manual_review_needed || 0}</p>
+                                <span className="text-[10px] text-amber-500/80">Action Req.</span>
+                            </div>
                         </div>
                     </div>
                 </GlassCard>
 
-                <GlassCard className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/20">
+                <GlassCard className="bg-zinc-900/50 border-zinc-800/50 hover:bg-zinc-900 transition-colors group">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                            <TrendingDown className="w-6 h-6 text-purple-400" />
+                        <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <TrendingDown className="w-5 h-5 text-purple-400" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-400">Workload Reduction</p>
-                            <p className="text-2xl font-bold text-white">{stats?.workload_reduction_pct || 0}%</p>
-                            <p className="text-xs text-purple-400">vs manual triage</p>
+                            <p className="text-xs font-medium text-zinc-500">Workload Reduction</p>
+                            <div className="flex items-baseline gap-2">
+                                <p className="text-2xl font-semibold text-zinc-100">{stats?.workload_reduction_pct || 0}%</p>
+                                <span className="text-[10px] text-purple-500/80">Efficiency</span>
+                            </div>
                         </div>
                     </div>
                 </GlassCard>
@@ -145,113 +152,140 @@ export default function CloudEngineerDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Priority Alert Table */}
                 <div className="lg:col-span-2">
-                    <GlassCard className="p-0 overflow-hidden">
-                        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+                    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 backdrop-blur-sm overflow-hidden">
+                        <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
                             <div>
-                                <h3 className="font-semibold text-lg text-white">Priority-Ranked Alerts</h3>
-                                <p className="text-xs text-gray-400">Sorted by severity × confidence</p>
+                                <h3 className="font-semibold text-sm text-zinc-100">Priority-Ranked Alerts</h3>
+                                <p className="text-xs text-zinc-500 mt-0.5">Sorted by severity × confidence score</p>
                             </div>
                             <div className="flex gap-2">
-                                <span className="px-2 py-1 rounded text-xs bg-red-500/20 text-red-400">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-red-500/10 text-red-500 border border-red-500/10">
                                     {stats?.true_positives} TP
                                 </span>
-                                <span className="px-2 py-1 rounded text-xs bg-blue-500/20 text-blue-400">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-500/10 text-blue-500 border border-blue-500/10">
                                     {stats?.false_positives} FP
                                 </span>
-                                <span className="px-2 py-1 rounded text-xs bg-green-500/20 text-green-400">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-green-500/10 text-green-500 border border-green-500/10">
                                     {stats?.benign_positives} BP
                                 </span>
                             </div>
                         </div>
-                        <div className="overflow-x-auto max-h-96">
+                        <div className="overflow-x-auto max-h-[500px] custom-scrollbar">
                             <table className="w-full text-sm">
-                                <thead className="bg-white/5 sticky top-0">
-                                    <tr className="text-left text-gray-400">
-                                        <th className="px-4 py-3">Priority</th>
-                                        <th className="px-4 py-3">Alert</th>
-                                        <th className="px-4 py-3">Prediction</th>
-                                        <th className="px-4 py-3">Confidence</th>
-                                        <th className="px-4 py-3"></th>
+                                <thead className="bg-zinc-900/50 sticky top-0 z-10 backdrop-blur-md">
+                                    <tr className="text-left text-zinc-500 text-xs uppercase tracking-wider font-medium">
+                                        <th className="px-6 py-3">Priority</th>
+                                        <th className="px-6 py-3">Alert Details</th>
+                                        <th className="px-6 py-3">Prediction</th>
+                                        <th className="px-6 py-3">Confidence</th>
+                                        <th className="px-6 py-3"></th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-white/5">
+                                <tbody className="divide-y divide-zinc-800/50">
                                     {data?.alerts.map((alert, idx) => (
                                         <tr
                                             key={alert.id}
-                                            className="hover:bg-white/5 cursor-pointer transition-colors group"
+                                            className="hover:bg-zinc-800/30 cursor-pointer transition-colors group"
                                             onClick={() => router.push(`/dashboard/incidents/${alert.id}`)}
                                         >
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-lg font-bold text-gray-300">#{idx + 1}</span>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-sm font-mono text-zinc-600">#{idx + 1}</span>
                                                     <div
-                                                        className="w-2 h-8 rounded-full"
+                                                        className="w-1 h-8 rounded-full opacity-80"
                                                         style={{ backgroundColor: SEVERITY_COLORS[alert.severity] }}
                                                     />
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3">
+                                            <td className="px-6 py-4">
                                                 <div className="max-w-xs">
-                                                    <p className="font-medium text-white truncate group-hover:text-blue-400 transition-colors">{alert.title}</p>
-                                                    <p className="text-xs text-gray-500">{alert.resource_type} • {alert.resource_name}</p>
+                                                    <p className="font-medium text-zinc-200 truncate group-hover:text-white transition-colors">{alert.title}</p>
+                                                    <div className="flex items-center gap-1.5 mt-1">
+                                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">{alert.resource_type}</span>
+                                                        <span className="text-xs text-zinc-500 truncate max-w-[120px]">{alert.resource_name}</span>
+                                                    </div>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3">
+                                            <td className="px-6 py-4">
                                                 <span
-                                                    className="px-2 py-1 rounded text-xs font-medium"
+                                                    className="px-2 py-1 rounded-md text-[10px] font-semibold border"
                                                     style={{
-                                                        backgroundColor: `${PREDICTION_COLORS[alert.xgb_prediction]}20`,
-                                                        color: PREDICTION_COLORS[alert.xgb_prediction]
+                                                        backgroundColor: `${PREDICTION_COLORS[alert.xgb_prediction]}10`,
+                                                        color: PREDICTION_COLORS[alert.xgb_prediction],
+                                                        borderColor: `${PREDICTION_COLORS[alert.xgb_prediction]}20`
                                                     }}
                                                 >
                                                     {alert.xgb_prediction.replace('_', ' ')}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-16 h-2 bg-white/10 rounded-full overflow-hidden">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
                                                         <div
-                                                            className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full"
-                                                            style={{ width: `${alert.xgb_confidence * 100}%` }}
+                                                            className="h-full rounded-full transition-all duration-500"
+                                                            style={{
+                                                                width: `${alert.xgb_confidence * 100}%`,
+                                                                backgroundColor: PREDICTION_COLORS[alert.xgb_prediction]
+                                                            }}
                                                         />
                                                     </div>
-                                                    <span className="text-xs text-gray-400">
+                                                    <span className="text-xs font-mono text-zinc-500">
                                                         {(alert.xgb_confidence * 100).toFixed(0)}%
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3">
-                                                <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+                                            <td className="px-6 py-4">
+                                                <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-300 group-hover:translate-x-1 transition-all" />
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-                    </GlassCard>
+                    </div>
                 </div>
 
                 {/* Severity Distribution Chart */}
-                <GlassCard>
-                    <h3 className="font-semibold text-white mb-4">Alerts by Severity & Prediction</h3>
-                    <ResponsiveContainer width="100%" height={280}>
-                        <BarChart data={severityData} layout="vertical">
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                            <XAxis type="number" stroke="#9ca3af" fontSize={12} />
-                            <YAxis dataKey="name" type="category" stroke="#9ca3af" fontSize={12} width={60} />
-                            <Tooltip
-                                contentStyle={{
-                                    backgroundColor: 'rgba(17, 24, 39, 0.95)',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    borderRadius: '8px'
-                                }}
-                            />
-                            <Legend />
-                            <Bar dataKey="TP" name="True Positive" stackId="a" fill="#ef4444" radius={[0, 0, 0, 0]} />
-                            <Bar dataKey="FP" name="False Positive" stackId="a" fill="#3b82f6" />
-                            <Bar dataKey="BP" name="Benign Positive" stackId="a" fill="#22c55e" radius={[0, 4, 4, 0]} />
-                        </BarChart>
-                    </ResponsiveContainer>
+                <GlassCard className="flex flex-col h-full bg-zinc-900/50 border-zinc-800">
+                    <div className="mb-6">
+                        <h3 className="font-semibold text-sm text-zinc-100">Analysis Distribution</h3>
+                        <p className="text-xs text-zinc-500 mt-1">Model predictions across severity levels</p>
+                    </div>
+                    <div className="flex-1 w-full min-h-[250px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={severityData} layout="vertical" margin={{ left: -20 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" horizontal={false} />
+                                <XAxis type="number" stroke="#52525b" fontSize={10} tickLine={false} axisLine={false} />
+                                <YAxis
+                                    dataKey="name"
+                                    type="category"
+                                    stroke="#71717a"
+                                    fontSize={11}
+                                    width={60}
+                                    tickLine={false}
+                                    axisLine={false}
+                                />
+                                <Tooltip
+                                    cursor={{ fill: '#27272a', opacity: 0.4 }}
+                                    contentStyle={{
+                                        backgroundColor: '#18181b',
+                                        border: '1px solid #27272a',
+                                        borderRadius: '8px',
+                                        fontSize: '12px',
+                                        color: '#f4f4f5'
+                                    }}
+                                />
+                                <Bar dataKey="TP" name="True Positive" stackId="a" fill="#ef4444" radius={[0, 0, 0, 0]} barSize={20} />
+                                <Bar dataKey="FP" name="False Positive" stackId="a" fill="#3b82f6" barSize={20} />
+                                <Bar dataKey="BP" name="Benign Positive" stackId="a" fill="#22c55e" radius={[0, 4, 4, 0]} barSize={20} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <div className="mt-4 flex items-center justify-center gap-4 text-[10px] text-zinc-500">
+                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-red-500"></div>True Positive</div>
+                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-blue-500"></div>False Positive</div>
+                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-green-500"></div>Benign</div>
+                    </div>
                 </GlassCard>
             </div>
         </div>
