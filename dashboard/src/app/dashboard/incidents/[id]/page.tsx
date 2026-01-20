@@ -49,33 +49,81 @@ export default function IncidentAnalysisPage() {
     useEffect(() => {
         async function loadAnalysis() {
             try {
-                // 1. Find the incident (Mock DB)
-                const alert = MOCK_ALERTS.find(a => a.id === id);
+                // 1. Fetch from Backend API (Enhanced Alerts)
+                const alert = await api.fetchEnhancedAlertById(id);
+
                 if (!alert) {
-                    setError("Incident not found.");
-                    setLoading(false);
-                    return;
+                    // Fallback to Mock if ID matches mock format (just in case)
+                    const mockAlert = MOCK_ALERTS.find(a => a.id === id);
+                    if (mockAlert) {
+                        setIncident(mockAlert);
+                    } else {
+                        setError("Incident not found.");
+                        setLoading(false);
+                        return;
+                    }
+                } else {
+                    setIncident(alert);
                 }
-                setIncident(alert);
 
-                // 2. Call Backend APIs
-                // We use parallel execution for speed
-                const features = alert.features.all_features || {
-                    Category: alert.category,
-                    alert_burst_count: alert.features.alert_burst_count
-                };
+                // Use the resolved alert object (either from API or Mock)
+                const currentIncident: any = alert || MOCK_ALERTS.find(a => a.id === id);
+                if (!currentIncident) return;
 
-                const [predRes, explainRes, remRes, ragRes] = await Promise.all([
-                    api.predict(features),
-                    api.explain(features),
-                    api.searchRemediation(alert.description),
-                    api.askRag(alert.description)
-                ]);
+                // 2. Set Prediction & Explanation from existing data or API
+                if (currentIncident.xgb_prediction) {
+                    setPrediction({
+                        prediction: currentIncident.xgb_prediction.replace('PredictionClass.', ''),
+                        confidence: currentIncident.xgb_confidence,
+                        probabilities: { [currentIncident.xgb_prediction]: currentIncident.xgb_confidence }
+                    });
+                } else {
+                    const features = currentIncident.features || {};
+                    api.predict(features).then(setPrediction).catch(console.error);
+                }
 
-                setPrediction(predRes);
-                setExplanation(explainRes);
-                setRemediation(remRes);
-                setAiAdvice(ragRes);
+                if (currentIncident.shap_values) {
+                    const explanationItems = Object.entries(currentIncident.shap_values).map(([feature, value]) => ({
+                        feature,
+                        shap_value: Number(value)
+                    })).sort((a, b) => Math.abs(b.shap_value) - Math.abs(a.shap_value));
+
+                    setExplanation({
+                        prediction: currentIncident.xgb_prediction || 'Unknown',
+                        explanation: explanationItems,
+                        base_value: 0
+                    });
+                } else {
+                    const features = currentIncident.features || {};
+                    api.explain(features).then(setExplanation).catch(console.error);
+                }
+
+                // 3. Fetch Rich Guidance/Remediation
+                const guidanceRes = await api.fetchGuidance(currentIncident.id, 'CLOUD_ENGINEER');
+                if (guidanceRes) {
+                    const stepsText = (guidanceRes.remediation_steps || [])
+                        .map((s: string, i: number) => `${i + 1}. ${s}`)
+                        .join('\n');
+
+                    setAiAdvice({
+                        query: currentIncident.description,
+                        advice: `${guidanceRes.guidance}\n\n**Action Plan:**\n${stepsText}`,
+                        sources: []
+                    });
+                    if (guidanceRes.code_snippets && guidanceRes.code_snippets.length > 0) {
+                        setFixScript({
+                            script: guidanceRes.code_snippets[0].code,
+                            platform: guidanceRes.code_snippets[0].language || 'bash'
+                        });
+                    }
+                } else {
+                    const [remRes, ragRes] = await Promise.all([
+                        api.searchRemediation(currentIncident.description),
+                        api.askRag(currentIncident.description)
+                    ]);
+                    setRemediation(remRes);
+                    setAiAdvice(ragRes);
+                }
 
             } catch (err: any) {
                 console.error("Analysis failed:", err);
@@ -197,7 +245,7 @@ export default function IncidentAnalysisPage() {
                             </div>
                             <div className="flex justify-between py-2 border-b border-white/5">
                                 <span className="text-neutral-400">Category</span>
-                                <span className="text-white">{incident.category}</span>
+                                <span className="text-white">{incident.category || incident.risk_category}</span>
                             </div>
                             <div className="flex justify-between py-2 border-b border-white/5">
                                 <span className="text-neutral-400">Source IP</span>

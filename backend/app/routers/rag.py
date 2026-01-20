@@ -101,7 +101,7 @@ def get_rag_status():
     return {
         "status": "online",
         "embedding_model": "all-MiniLM-L6-v2",
-        "llm_model": "gemini-1.5-flash",
+        "llm_model": "gemini-2.0-flash",
         "knowledge_base": kb_status
     }
 

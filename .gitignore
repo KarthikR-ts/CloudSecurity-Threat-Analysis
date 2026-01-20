@@ -59,3 +59,8 @@ node_modules/
 .next/
 out/
 .vercel
+
+
+#docs
+ML_TRAINING_HELP_PROMPT.md
+ml/ML_TRAINING_HELP_PROMPT.md

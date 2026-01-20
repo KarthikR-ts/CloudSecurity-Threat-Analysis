@@ -5,27 +5,27 @@ import Link from "next/link";
 export default function Home() {
   const roles = [
     {
-      id: "enterprise",
-      title: "Enterprise Security",
+      id: "cloud-engineer",
+      title: "Cloud Engineer",
       description: "SOC Analyst view for real-time triage and remediation.",
       icon: <ShieldCheck className="w-10 h-10 text-brand-primary" />,
-      href: "/dashboard/enterprise",
+      href: "/dashboard/cloud-engineer",
       gradient: "from-brand-primary/20 to-transparent",
     },
     {
-      id: "researcher",
-      title: "ML Researcher",
+      id: "ml-engineer",
+      title: "ML Engineer",
       description: "Deep dive into model inference, feature importance, and drift.",
       icon: <BrainCircuit className="w-10 h-10 text-brand-secondary" />,
-      href: "/dashboard/researcher",
+      href: "/dashboard/ml-engineer",
       gradient: "from-brand-secondary/20 to-transparent",
     },
     {
-      id: "vendor",
-      title: "Platform Vendor",
-      description: "Manage compliance policies and drift detection rules.",
+      id: "executive",
+      title: "Executive",
+      description: "Risk gauge, plain-language actions, business impact.",
       icon: <Building2 className="w-10 h-10 text-brand-accent" />,
-      href: "/dashboard/vendor",
+      href: "/dashboard/executive",
       gradient: "from-brand-accent/20 to-transparent",
     },
   ];

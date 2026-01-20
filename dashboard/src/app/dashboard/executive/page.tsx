@@ -41,14 +41,25 @@ export default function ExecutiveDashboard() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const [metricsData, alertsData] = await Promise.all([
-                api.fetchMetricsSummary(),
-                api.fetchEnhancedAlerts({ role: 'NON_TECHNICAL' })
-            ]);
+            try {
+                // Check if API methods exist to prevent runtime errors during HMR
+                if (typeof api.fetchMetricsSummary !== 'function' || typeof api.fetchEnhancedAlerts !== 'function') {
+                    console.warn("API methods not available yet, waiting for reload...");
+                    return;
+                }
 
-            if (metricsData) setMetrics(metricsData);
-            if (alertsData) setAlerts(alertsData.alerts);
-            setLoading(false);
+                const [metricsData, alertsData] = await Promise.all([
+                    api.fetchMetricsSummary(),
+                    api.fetchEnhancedAlerts({ role: 'NON_TECHNICAL' })
+                ]);
+
+                if (metricsData) setMetrics(metricsData);
+                if (alertsData) setAlerts(alertsData.alerts);
+            } catch (error) {
+                console.error("Failed to fetch dashboard data:", error);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchData();

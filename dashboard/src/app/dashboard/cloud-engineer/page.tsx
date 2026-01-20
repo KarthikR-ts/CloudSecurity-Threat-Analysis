@@ -18,6 +18,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer, Cell, Legend
 } from "recharts";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const SEVERITY_COLORS = {
@@ -34,9 +35,8 @@ const PREDICTION_COLORS = {
 };
 
 export default function CloudEngineerDashboard() {
+    const router = useRouter();
     const [data, setData] = useState<AlertsResponse | null>(null);
-    const [selectedAlert, setSelectedAlert] = useState<EnhancedAlert | null>(null);
-    const [guidance, setGuidance] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -48,9 +48,6 @@ export default function CloudEngineerDashboard() {
             });
             if (result) {
                 setData(result);
-                if (result.alerts.length > 0) {
-                    setSelectedAlert(result.alerts[0]);
-                }
             }
             setLoading(false);
         };
@@ -59,12 +56,6 @@ export default function CloudEngineerDashboard() {
         const interval = setInterval(fetchData, 5000);
         return () => clearInterval(interval);
     }, []);
-
-    useEffect(() => {
-        if (selectedAlert) {
-            api.fetchGuidance(selectedAlert.id, 'CLOUD_ENGINEER').then(setGuidance);
-        }
-    }, [selectedAlert]);
 
     if (loading) {
         return (
@@ -98,7 +89,6 @@ export default function CloudEngineerDashboard() {
             <DashboardToolbar />
 
             {/* Workload Metrics */}
-
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <GlassCard className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/20">
                     <div className="flex items-center gap-4">
@@ -188,9 +178,8 @@ export default function CloudEngineerDashboard() {
                                     {data?.alerts.map((alert, idx) => (
                                         <tr
                                             key={alert.id}
-                                            className={`hover:bg-white/5 cursor-pointer transition-colors ${selectedAlert?.id === alert.id ? 'bg-blue-500/10' : ''
-                                                }`}
-                                            onClick={() => setSelectedAlert(alert)}
+                                            className="hover:bg-white/5 cursor-pointer transition-colors group"
+                                            onClick={() => router.push(`/dashboard/incidents/${alert.id}`)}
                                         >
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-2">
@@ -203,7 +192,7 @@ export default function CloudEngineerDashboard() {
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="max-w-xs">
-                                                    <p className="font-medium text-white truncate">{alert.title}</p>
+                                                    <p className="font-medium text-white truncate group-hover:text-blue-400 transition-colors">{alert.title}</p>
                                                     <p className="text-xs text-gray-500">{alert.resource_type} • {alert.resource_name}</p>
                                                 </div>
                                             </td>
@@ -232,7 +221,7 @@ export default function CloudEngineerDashboard() {
                                                 </div>
                                             </td>
                                             <td className="px-4 py-3">
-                                                <ChevronRight className="w-4 h-4 text-gray-500" />
+                                                <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
                                             </td>
                                         </tr>
                                     ))}
@@ -265,101 +254,6 @@ export default function CloudEngineerDashboard() {
                     </ResponsiveContainer>
                 </GlassCard>
             </div>
-
-            {/* Remediation Panel */}
-            {selectedAlert && (
-                <GlassCard className="border-blue-500/30 overflow-hidden relative">
-                    <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
-                        <div className="flex items-center gap-2 px-3 py-1 bg-blue-500/20 rounded-full border border-blue-500/30">
-                            <Sparkles className="w-4 h-4 text-blue-400 animate-pulse" />
-                            <span className="text-[10px] font-bold text-blue-400 tracking-wider">RAG-POWERED REMEDIATION</span>
-                        </div>
-                        <div className="flex gap-2">
-                            {selectedAlert.mitre_techniques.map(t => (
-                                <span key={t} className="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-[10px] font-semibold border border-red-500/20">
-                                    {t}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="flex items-center justify-between mb-6 p-6 pb-0">
-                        <div>
-                            <h3 className="font-bold text-xl text-white flex items-center gap-3">
-                                <Terminal className="w-6 h-6 text-blue-400" />
-                                Smart Remediation Logic
-                            </h3>
-                            <p className="text-sm text-gray-300 mt-1">
-                                Context-aware steps generated from Azure Security Benchmark & MITRE ATT&CK
-                            </p>
-                        </div>
-                    </div>
-
-                    {guidance ? (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 pt-0">
-                            <div className="space-y-6">
-                                <div className="p-4 bg-white/5 rounded-xl border border-white/10">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                        <ShieldAlert className="w-4 h-4" />
-                                        Contextual Analysis
-                                    </h4>
-                                    <p className="text-gray-200 leading-relaxed">{guidance.guidance}</p>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Action Plan</h4>
-                                    {guidance.remediation_steps?.map((step: string, idx: number) => (
-                                        <div key={idx} className="flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
-                                            <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0 border border-blue-500/20">
-                                                <span className="text-sm text-blue-400 font-black">{idx + 1}</span>
-                                            </div>
-                                            <p className="text-sm text-gray-200 font-medium leading-relaxed">{step}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Automation Scripts</h4>
-                                {guidance.code_snippets?.map((snippet: any, idx: number) => (
-                                    <div key={idx} className="rounded-xl overflow-hidden border border-white/10 shadow-2xl">
-                                        <div className="bg-white/10 px-4 py-3 flex items-center justify-between border-b border-white/10">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-3 h-3 rounded-full bg-red-500/50" />
-                                                <div className="w-3 h-3 rounded-full bg-amber-500/50" />
-                                                <div className="w-3 h-3 rounded-full bg-green-500/50" />
-                                                <span className="text-xs font-mono text-gray-300 ml-2">{snippet.title}</span>
-                                            </div>
-                                        </div>
-                                        <pre className="p-6 bg-slate-950/80 backdrop-blur-sm overflow-x-auto">
-                                            <code className="text-sm text-cyan-400 font-mono leading-relaxed">{snippet.code}</code>
-                                        </pre>
-                                    </div>
-                                ))}
-
-                                <div className="p-4 bg-emerald-500/5 rounded-xl border border-emerald-500/20 mt-4">
-                                    <div className="flex items-center gap-2 text-emerald-400 mb-2">
-                                        <CheckCircle className="w-4 h-4" />
-                                        <span className="text-xs font-bold uppercase tracking-wider">Verification Source</span>
-                                    </div>
-                                    <p className="text-xs text-gray-400 italic">
-                                        Verified against Azure Security Benchmark v3 & CIS Microsoft Azure Foundations Benchmark v2.0.0
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center h-64 gap-4 p-6">
-                            <div className="relative">
-                                <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full animate-pulse" />
-                                <Brain className="w-12 h-12 text-blue-400 relative z-10" />
-                            </div>
-                            <p className="text-gray-400 text-sm animate-pulse">RAG Engine synthesizing remediation advice...</p>
-                        </div>
-                    )}
-                </GlassCard>
-            )}
-
         </div>
     );
 }
