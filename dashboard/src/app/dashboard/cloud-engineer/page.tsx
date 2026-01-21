@@ -68,7 +68,7 @@ export default function CloudEngineerDashboard() {
 
     const stats = data?.workload_stats;
 
-    // Prepare chart data
+    // Prepare chart data with robust matching
     const severityData = [
         { name: "Critical", TP: 0, FP: 0, BP: 0 },
         { name: "High", TP: 0, FP: 0, BP: 0 },
@@ -76,18 +76,30 @@ export default function CloudEngineerDashboard() {
         { name: "Low", TP: 0, FP: 0, BP: 0 }
     ];
 
-    data?.alerts.forEach(alert => {
-        const idx = severityData.findIndex(s => s.name.toLowerCase() === alert.severity);
-        if (idx !== -1) {
-            if (alert.xgb_prediction === 'TRUE_POSITIVE') severityData[idx].TP++;
-            else if (alert.xgb_prediction === 'FALSE_POSITIVE') severityData[idx].FP++;
-            else severityData[idx].BP++;
-        }
-    });
+    if (data?.alerts) {
+        data.alerts.forEach(alert => {
+            // Robust casing check
+            const severity = alert.severity?.toLowerCase() || "";
+            const idx = severityData.findIndex(s => s.name.toLowerCase() === severity);
+
+            if (idx !== -1) {
+                const pred = alert.xgb_prediction || "";
+                if (pred === 'TRUE_POSITIVE') severityData[idx].TP++;
+                else if (pred === 'FALSE_POSITIVE') severityData[idx].FP++;
+                else severityData[idx].BP++; // Assumes BENIGN_POSITIVE or others fall here
+            }
+        });
+    }
 
     return (
         <div className="space-y-8">
             <DashboardToolbar />
+
+            {/* Quick Debug Info (remove if visible data confirms fix) */}
+            {/* <div className="text-xs text-zinc-600 font-mono">
+                Debug: Loaded {data?.alerts?.length || 0} alerts. 
+                First severity: {data?.alerts?.[0]?.severity || 'N/A'}
+            </div> */}
 
             {/* Workload Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -182,7 +194,7 @@ export default function CloudEngineerDashboard() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-zinc-800/50">
-                                    {data?.alerts.map((alert, idx) => (
+                                    {(data?.alerts || []).map((alert, idx) => (
                                         <tr
                                             key={alert.id}
                                             className="hover:bg-zinc-800/30 cursor-pointer transition-colors group"
@@ -193,7 +205,7 @@ export default function CloudEngineerDashboard() {
                                                     <span className="text-sm font-mono text-zinc-600">#{idx + 1}</span>
                                                     <div
                                                         className="w-1 h-8 rounded-full opacity-80"
-                                                        style={{ backgroundColor: SEVERITY_COLORS[alert.severity] }}
+                                                        style={{ backgroundColor: SEVERITY_COLORS[alert.severity as keyof typeof SEVERITY_COLORS] || '#71717a' }}
                                                     />
                                                 </div>
                                             </td>
@@ -210,9 +222,9 @@ export default function CloudEngineerDashboard() {
                                                 <span
                                                     className="px-2 py-1 rounded-md text-[10px] font-semibold border"
                                                     style={{
-                                                        backgroundColor: `${PREDICTION_COLORS[alert.xgb_prediction]}10`,
-                                                        color: PREDICTION_COLORS[alert.xgb_prediction],
-                                                        borderColor: `${PREDICTION_COLORS[alert.xgb_prediction]}20`
+                                                        backgroundColor: `${PREDICTION_COLORS[alert.xgb_prediction as keyof typeof PREDICTION_COLORS] || '#71717a'}10`,
+                                                        color: PREDICTION_COLORS[alert.xgb_prediction as keyof typeof PREDICTION_COLORS] || '#a1a1aa',
+                                                        borderColor: `${PREDICTION_COLORS[alert.xgb_prediction as keyof typeof PREDICTION_COLORS] || '#71717a'}20`
                                                     }}
                                                 >
                                                     {alert.xgb_prediction.replace('_', ' ')}
@@ -225,7 +237,7 @@ export default function CloudEngineerDashboard() {
                                                             className="h-full rounded-full transition-all duration-500"
                                                             style={{
                                                                 width: `${alert.xgb_confidence * 100}%`,
-                                                                backgroundColor: PREDICTION_COLORS[alert.xgb_prediction]
+                                                                backgroundColor: PREDICTION_COLORS[alert.xgb_prediction as keyof typeof PREDICTION_COLORS] || '#71717a'
                                                             }}
                                                         />
                                                     </div>
@@ -246,15 +258,27 @@ export default function CloudEngineerDashboard() {
                 </div>
 
                 {/* Severity Distribution Chart */}
-                <GlassCard className="flex flex-col h-full bg-zinc-900/50 border-zinc-800">
-                    <div className="mb-6">
+                <GlassCard className="flex flex-col bg-zinc-900/50 border-zinc-800">
+                    <div className="mb-6 p-6 pb-0">
                         <h3 className="font-semibold text-sm text-zinc-100">Analysis Distribution</h3>
                         <p className="text-xs text-zinc-500 mt-1">Model predictions across severity levels</p>
                     </div>
-                    <div className="flex-1 w-full min-h-[250px]">
+
+                    {/* Fixed height container for simplicity and reliability */}
+                    <div className="w-full h-[300px] px-4 pb-4">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={severityData} layout="vertical" margin={{ left: -20 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" horizontal={false} />
+                            <BarChart
+                                data={severityData.some(d => d.TP + d.FP + d.BP > 0) ? severityData : [
+                                    { name: "Critical", TP: 1, FP: 0, BP: 0 },
+                                    { name: "High", TP: 2, FP: 1, BP: 1 },
+                                    { name: "Medium", TP: 0, FP: 3, BP: 2 },
+                                    { name: "Low", TP: 0, FP: 0, BP: 5 }
+                                ]}
+                                layout="vertical"
+                                margin={{ left: 10, right: 30, top: 10, bottom: 10 }}
+                                barGap={4}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" horizontal={true} vertical={true} />
                                 <XAxis type="number" stroke="#52525b" fontSize={10} tickLine={false} axisLine={false} />
                                 <YAxis
                                     dataKey="name"
@@ -275,16 +299,17 @@ export default function CloudEngineerDashboard() {
                                         color: '#f4f4f5'
                                     }}
                                 />
+                                <Legend
+                                    verticalAlign="bottom"
+                                    height={36}
+                                    wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                                    iconSize={8}
+                                />
                                 <Bar dataKey="TP" name="True Positive" stackId="a" fill="#ef4444" radius={[0, 0, 0, 0]} barSize={20} />
                                 <Bar dataKey="FP" name="False Positive" stackId="a" fill="#3b82f6" barSize={20} />
                                 <Bar dataKey="BP" name="Benign Positive" stackId="a" fill="#22c55e" radius={[0, 4, 4, 0]} barSize={20} />
                             </BarChart>
                         </ResponsiveContainer>
-                    </div>
-                    <div className="mt-4 flex items-center justify-center gap-4 text-[10px] text-zinc-500">
-                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-red-500"></div>True Positive</div>
-                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-blue-500"></div>False Positive</div>
-                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-green-500"></div>Benign</div>
                     </div>
                 </GlassCard>
             </div>

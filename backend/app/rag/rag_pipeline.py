@@ -25,7 +25,7 @@ def get_gemini_client():
         return None
     
     genai.configure(api_key=api_key)
-    return genai.GenerativeModel('gemini-2.0-flash')
+    return genai.GenerativeModel('gemini-3-flash-preview')
 
 
 def generate_remediation_advice(query: str, context_docs: List[Dict]) -> str:

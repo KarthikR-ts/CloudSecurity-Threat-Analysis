@@ -64,3 +64,8 @@ out/
 #docs
 ML_TRAINING_HELP_PROMPT.md
 ml/ML_TRAINING_HELP_PROMPT.md
+ml/generate_metrics_plot.py
+ml/generate_visuals.py
+backend/Dockerfile
+backend/Procfile
+dashboard/Dockerfile

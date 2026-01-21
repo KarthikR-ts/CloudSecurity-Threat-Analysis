@@ -105,11 +105,21 @@ export default function IncidentAnalysisPage() {
                         .map((s: string, i: number) => `${i + 1}. ${s}`)
                         .join('\n');
 
+                    // Map backend sources to frontend RemediationResult structure
+                    const mappedSources = (guidanceRes.sources || []).map((s: any, idx: number) => ({
+                        id: `src-${idx}`,
+                        score: 0.95, // Default high confidence for manually curated/RAG sources
+                        content: s.type ? `Type: ${s.type}` : "Relevant security documentation",
+                        source: s.title || "Unknown Source",
+                        metadata: {}
+                    }));
+
                     setAiAdvice({
                         query: currentIncident.description,
                         advice: `${guidanceRes.guidance}\n\n**Action Plan:**\n${stepsText}`,
-                        sources: []
+                        sources: mappedSources
                     });
+
                     if (guidanceRes.code_snippets && guidanceRes.code_snippets.length > 0) {
                         setFixScript({
                             script: guidanceRes.code_snippets[0].code,

@@ -1,47 +1,45 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal
+cd /d "%~dp0"
 
 echo ===================================================
-echo   Aurora CSPM - Automated Setup and Start (Windows)
+echo   Aurora CSPM - Automated Setup and Start (Simple)
 echo ===================================================
-
-:: 1. Backend Setup
 echo.
-echo [1/2] Setting up Backend...
 
-:: Ensure data files are in the right place
-if not exist backend\data ( mkdir backend\data )
-if exist test_ml_ready.parquet ( move /Y test_ml_ready.parquet backend\data\ )
-if exist train_ml_ready.parquet ( move /Y train_ml_ready.parquet backend\data\ )
+:: 1. Backend
+echo [1/2] Configuring Backend...
+if not exist "backend\data" mkdir "backend\data"
+if exist "*.parquet" move "*.parquet" "backend\data\" >nul
 
 cd backend
 if not exist venv (
-    echo Creating virtual environment...
+    echo   Creating venv...
     python -m venv venv
 )
+echo   Installing deps...
 call venv\Scripts\activate
-echo Installing backend dependencies...
-pip install -r requirements.txt
-echo Starting Backend API...
-start "Aurora Backend API" cmd /k "venv\Scripts\activate && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
+pip install -r requirements.txt >nul 2>&1
+
+echo   Starting Backend...
+start "Backend" cmd /k "call venv\Scripts\activate && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
 cd ..
 
-:: 2. Dashboard Setup
+:: 2. Dashboard
 echo.
-echo [2/2] Setting up Dashboard...
+echo [2/2] Configuring Dashboard...
 cd dashboard
 if not exist node_modules (
-    echo Installing dashboard dependencies...
-    npm install
+    echo   Installing npm modules...
+    call npm install
 )
-echo Starting Dashboard UI...
-start "Aurora Dashboard UI" cmd /k "npm run dev"
+
+echo   Starting Frontend...
+start "Frontend" cmd /k "npm run dev"
 cd ..
 
 echo.
 echo ===================================================
-echo   System is starting up!
-echo   API: http://localhost:8000
-echo   UI:  http://localhost:3000
+echo   Running! Close this window whenever.
 echo ===================================================
 pause

@@ -12,10 +12,19 @@ router = APIRouter()
 
 # Paths
 BASE_DIR = Path(os.getcwd())
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
-ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
-MODEL_PATH = ARTIFACTS_DIR / "xgboost_model.json"
-FEATURE_LIST_PATH = PROJECT_ROOT / "ml" / "feature_list.json"
+CURRENT_FILE = Path(__file__).resolve()
+
+# Production: Check backend/app/models first
+MODELS_DIR = CURRENT_FILE.parent.parent / "models"
+MODEL_PATH = MODELS_DIR / "xgboost_model.json"
+FEATURE_LIST_PATH = MODELS_DIR / "feature_list.json"
+
+# Development: Fallback to monorepo root structure
+if not MODEL_PATH.exists():
+    PROJECT_ROOT = CURRENT_FILE.parent.parent.parent.parent
+    ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
+    MODEL_PATH = ARTIFACTS_DIR / "xgboost_model.json"
+    FEATURE_LIST_PATH = PROJECT_ROOT / "ml" / "feature_list.json"
 
 # Global vars
 model = None

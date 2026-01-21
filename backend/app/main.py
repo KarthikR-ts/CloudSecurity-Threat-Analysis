@@ -28,6 +28,11 @@ origins = [
     # Add production URL here
 ]
 
+# Add FRONTEND_URL from env if it exists
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    origins.append(frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
