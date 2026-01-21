@@ -11,3 +11,5 @@ shap
 sentence-transformers
 pinecone
 google-generativeai
+pydantic
+requests
